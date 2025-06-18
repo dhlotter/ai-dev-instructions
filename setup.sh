@@ -1,43 +1,58 @@
 #!/bin/bash
 
 GITHUB_REPO="dhlotter/ai-dev-instructions"
-REPO_URL="https://github.com/$GITHUB_REPO.git"
+GITHUB_API="https://api.github.com/repos/$GITHUB_REPO"
+RAW_CONTENT="https://raw.githubusercontent.com/$GITHUB_REPO/main"
 
 echo "Setting up AI development files in the current directory..."
 
-# Create a temporary directory
-TMP_DIR=$(mktemp -d)
-if [ $? -ne 0 ]; then
-  echo "Error: Failed to create temporary directory."
-  exit 1
-fi
-
-# Make sure temporary directory is cleaned up on exit
-cleanup() {
-  rm -rf "$TMP_DIR"
+# Function to download a file from GitHub
+download_file() {
+  local file_path="$1"
+  local target_path="$2"
+  
+  # Create directory structure
+  mkdir -p "$(dirname "$target_path")"
+  
+  # Download the file
+  echo "Downloading $file_path"
+  if ! curl -sSL "$RAW_CONTENT/$file_path" -o "$target_path"; then
+    echo "Warning: Failed to download $file_path"
+    return 1
+  fi
+  return 0
 }
-trap cleanup EXIT
 
-# Clone the repository to the temporary directory
-echo "Cloning repository..."
-if ! git clone --quiet "$REPO_URL" "$TMP_DIR"; then
-  echo "Error: Failed to clone repository."
+# Function to list all files in the repository
+list_repo_files() {
+  # Get the repository contents using GitHub API
+  echo "Fetching repository file list..."
+  curl -sSL "$GITHUB_API/git/trees/main?recursive=1" | grep -o '"path":"[^"]*"' | sed 's/"path":"//g' | sed 's/"//g'
+}
+
+# Get list of all files in the repository
+FILES=$(list_repo_files)
+if [ -z "$FILES" ]; then
+  echo "Error: Failed to list repository files."
   exit 1
 fi
 
-# Copy the .ai directory
-if [ -d "$TMP_DIR/.ai" ]; then
-  echo "Copying .ai directory..."
-  mkdir -p ".ai"
-  cp -R "$TMP_DIR/.ai"/* ".ai/"
-fi
-
-# Copy the .windsurf directory
-if [ -d "$TMP_DIR/.windsurf" ]; then
-  echo "Copying .windsurf directory..."
-  mkdir -p ".windsurf"
-  cp -R "$TMP_DIR/.windsurf"/* ".windsurf/"
-fi
+# Download each file
+echo "Downloading files..."
+for file in $FILES; do
+  # Skip .git files and directories
+  if [[ "$file" == .git* ]]; then
+    continue
+  fi
+  
+  # Skip files that are not in .ai or .windsurf directories
+  if [[ "$file" != .ai* ]] && [[ "$file" != .windsurf* ]]; then
+    continue
+  fi
+  
+  # Download the file
+  download_file "$file" "$file"
+done
 
 # Ensure the .windsurf/rules directory exists with at least one file
 if [ ! -d ".windsurf/rules" ] || [ ! "$(ls -A ".windsurf/rules" 2>/dev/null)" ]; then

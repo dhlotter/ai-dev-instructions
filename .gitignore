@@ -27,6 +27,7 @@ node_modules/
 # Build directories
 build/
 dist/
+tmp/
 
 # Temporary files
 *.tmp
@@ -46,3 +47,4 @@ debug.log
 *.njsproj
 *.sln
 *.sw?
+.gitignore
