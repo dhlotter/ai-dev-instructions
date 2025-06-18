@@ -2,9 +2,17 @@
 
 GITHUB_REPO="dhlotter/ai-dev-instructions"
 BRANCH="main"
-ARCHIVE_URL="https://github.com/$GITHUB_REPO/archive/refs/heads/$BRANCH.zip"
+ARCHIVE_URL="https://github.com/$GITHUB_REPO/archive/$BRANCH.zip"
 
 echo "Setting up AI development files in the current directory..."
+
+# Check for required commands
+for cmd in curl unzip; do
+  if ! command -v $cmd &> /dev/null; then
+    echo "Error: $cmd is required but not installed."
+    exit 1
+  fi
+done
 
 # Create a temporary directory
 TMP_DIR=$(mktemp -d)
@@ -33,9 +41,9 @@ if ! unzip -q "$TMP_DIR/repo.zip" -d "$TMP_DIR"; then
   exit 1
 fi
 
-# Get the extracted directory name
-EXTRACT_DIR="$TMP_DIR/ai-dev-instructions-$BRANCH"
-if [ ! -d "$EXTRACT_DIR" ]; then
+# Find the extracted directory name (in case branch name changes)
+EXTRACT_DIR=$(find "$TMP_DIR" -maxdepth 1 -type d -name "ai-dev-instructions*" | head -n 1)
+if [ -z "$EXTRACT_DIR" ] || [ ! -d "$EXTRACT_DIR" ]; then
   echo "Error: Extracted directory not found."
   exit 1
 fi
@@ -44,11 +52,13 @@ fi
 echo "Copying AI development files..."
 for dir in ".ai" ".windsurf"; do
   if [ -d "$EXTRACT_DIR/$dir" ]; then
+    echo "Copying $dir directory..."
     cp -R "$EXTRACT_DIR/$dir" .
-    echo "Copied $dir directory."
+  else
+    echo "Warning: $dir directory not found in the repository."
   fi
 done
 
 echo "AI development files have been set up in the current directory."
 echo "Directory structure:"
-find .ai .windsurf -type f 2>/dev/null | sort
+find .ai .windsurf -type f 2>/dev/null | sort || echo "No files found."
