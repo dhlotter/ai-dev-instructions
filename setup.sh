@@ -1,65 +1,54 @@
 #!/bin/bash
 
 GITHUB_REPO="dhlotter/ai-dev-instructions"
-GITHUB_API="https://api.github.com/repos/$GITHUB_REPO"
-RAW_CONTENT="https://raw.githubusercontent.com/$GITHUB_REPO/main"
+BRANCH="main"
+ARCHIVE_URL="https://github.com/$GITHUB_REPO/archive/refs/heads/$BRANCH.zip"
 
 echo "Setting up AI development files in the current directory..."
 
-# Function to download a file from GitHub
-download_file() {
-  local file_path="$1"
-  local target_path="$2"
-  
-  # Create directory structure
-  mkdir -p "$(dirname "$target_path")"
-  
-  # Download the file
-  echo "Downloading $file_path"
-  if ! curl -sSL "$RAW_CONTENT/$file_path" -o "$target_path"; then
-    echo "Warning: Failed to download $file_path"
-    return 1
-  fi
-  return 0
-}
-
-# Get repository file list using GitHub API
-echo "Fetching repository file list..."
-API_RESPONSE=$(curl -sSL "$GITHUB_API/git/trees/main?recursive=1")
-
-# Extract file paths from the API response
-FILES=$(echo "$API_RESPONSE" | grep -o '"path":"[^"]*"' | sed 's/"path":"//g' | sed 's/"//g')
-
-if [ -z "$FILES" ]; then
-  echo "Error: Failed to list repository files."
+# Create a temporary directory
+TMP_DIR=$(mktemp -d)
+if [ $? -ne 0 ]; then
+  echo "Error: Failed to create temporary directory."
   exit 1
 fi
 
-# Download each file
-echo "Downloading files..."
-while IFS= read -r file; do
-  # Skip empty lines
-  if [ -z "$file" ]; then
-    continue
+# Clean up temporary directory on exit
+cleanup() {
+  rm -rf "$TMP_DIR"
+}
+trap cleanup EXIT
+
+# Download the repository archive
+echo "Downloading repository archive..."
+if ! curl -sSL "$ARCHIVE_URL" -o "$TMP_DIR/repo.zip"; then
+  echo "Error: Failed to download repository archive."
+  exit 1
+fi
+
+# Extract the archive
+echo "Extracting files..."
+if ! unzip -q "$TMP_DIR/repo.zip" -d "$TMP_DIR"; then
+  echo "Error: Failed to extract repository archive."
+  exit 1
+fi
+
+# Get the extracted directory name
+EXTRACT_DIR="$TMP_DIR/ai-dev-instructions-$BRANCH"
+if [ ! -d "$EXTRACT_DIR" ]; then
+  echo "Error: Extracted directory not found."
+  exit 1
+fi
+
+# Copy .ai and .windsurf directories
+echo "Copying AI development files..."
+for dir in ".ai" ".windsurf"; do
+  if [ -d "$EXTRACT_DIR/$dir" ]; then
+    cp -R "$EXTRACT_DIR/$dir" .
+    echo "Copied $dir directory."
   fi
-  
-  # Skip .git files and directories
-  if [[ "$file" == .git* ]]; then
-    continue
-  fi
-  
-  # Skip files that should not be copied
-  if [[ "$file" == "setup.sh" ]] || \
-     [[ "$file" == "readme.md" ]] || \
-     [[ "$file" == ".gitignore" ]] || \
-     [[ "$file" == *".DS_Store" ]]; then
-    continue
-  fi
-  
-  # Download the file
-  download_file "$file" "$file"
-done <<< "$FILES"
+done
 
 echo "AI development files have been set up in the current directory."
 echo "Directory structure:"
-find . -type f -not -path "*/\.*" | grep -v "setup.sh" | sort
+find .ai .windsurf -type f 2>/dev/null | sort
