@@ -1,58 +1,79 @@
 #!/bin/bash
 
-REPO_URL="https://raw.githubusercontent.com/dhlotter/ai-dev-instructions/main"
+GITHUB_REPO="dhlotter/ai-dev-instructions"
+BRANCH="main"
+REPO_URL="https://raw.githubusercontent.com/$GITHUB_REPO/$BRANCH"
+API_URL="https://api.github.com/repos/$GITHUB_REPO/git/trees/$BRANCH?recursive=1"
 
 # Always use the current directory
 TARGET_DIR="."
 echo "Setting up AI development files in the current directory..."
 
-# Function to download a directory from GitHub
-# Usage: download_dir <target_dir> <source_dir>
-download_dir() {
-  local target_dir="$1"
-  local source_dir="$2"
+# Function to recursively download files from GitHub
+download_files() {
+  local prefix="$1"
+  local target_dir="$2"
   
-  # Create the target directory
-  mkdir -p "$target_dir"
+  echo "Fetching repository structure..."
+  # Get the repository structure using GitHub's API
+  local repo_data
+  repo_data=$(curl -sSL "$API_URL")
   
-  # Get the list of files in the source directory from GitHub
-  local files=()
-  if [ "$source_dir" == ".ai" ]; then
-    # Hardcode the files for .ai since we can't list the directory
-    files=(
-      "$REPO_URL/.ai/1.ideas/global.md"
-      "$REPO_URL/.ai/2.prd/.generate-prd.md"
-      "$REPO_URL/.ai/3.tasks/.generate-tasks.md"
-      "$REPO_URL/.ai/3.tasks/relevant-files.md"
-      "$REPO_URL/.ai/rule.task.md"
-    )
-  elif [ "$source_dir" == ".windsurf" ]; then
-    # Create an empty .windsurf/rules directory
-    mkdir -p "$target_dir/rules"
-    touch "$target_dir/rules/default.md"
+  if [ -z "$repo_data" ]; then
+    echo "Error: Failed to fetch repository structure."
+    exit 1
+  fi
+  
+  # Extract paths that start with the specified prefix
+  echo "Processing files..."
+  local paths
+  paths=$(echo "$repo_data" | grep -o '"path":"'"$prefix"'[^"]*"' | sed 's/"path":"//g' | sed 's/"//g')
+  
+  if [ -z "$paths" ]; then
+    echo "Warning: No files found with prefix '$prefix'."
     return 0
   fi
   
   # Download each file
-  for file_url in "${files[@]}"; do
-    # Extract the relative path from the URL
-    local rel_path="${file_url#$REPO_URL/}"
-    local target_path="$target_dir/${rel_path#.ai/}"
+  echo "$paths" | while read -r path; do
+    # Skip if this is a directory (ends with /)
+    if [[ "$path" == */ ]]; then
+      continue
+    fi
+    
+    # Extract the relative path from the prefix
+    local rel_path="${path#$prefix/}"
+    local target_path="$target_dir/$rel_path"
     
     # Create the directory structure
     mkdir -p "$(dirname "$target_path")"
     
     # Download the file
-    echo "Downloading $rel_path..."
-    if ! curl -sSL "$file_url" -o "$target_path"; then
-      echo "Warning: Failed to download $file_url"
+    echo "Downloading $path..."
+    if ! curl -sSL "$REPO_URL/$path" -o "$target_path"; then
+      echo "Warning: Failed to download $path"
     fi
   done
 }
 
 # Download the .ai and .windsurf directories
 echo "Downloading framework files..."
-download_dir "$TARGET_DIR/.ai" ".ai"
-download_dir "$TARGET_DIR/.windsurf" ".windsurf"
+
+# Create target directories
+mkdir -p "$TARGET_DIR/.ai"
+mkdir -p "$TARGET_DIR/.windsurf/rules"
+
+# Download .ai files
+download_files ".ai" "$TARGET_DIR/.ai"
+
+# Download .windsurf files
+download_files ".windsurf" "$TARGET_DIR/.windsurf"
+
+# If .windsurf directory is empty, create a default file
+if [ ! "$(ls -A "$TARGET_DIR/.windsurf/rules" 2>/dev/null)" ]; then
+  echo "Creating default rules file..."
+  mkdir -p "$TARGET_DIR/.windsurf/rules"
+  touch "$TARGET_DIR/.windsurf/rules/default.md"
+fi
 
 echo "AI development files have been set up in the current directory."
