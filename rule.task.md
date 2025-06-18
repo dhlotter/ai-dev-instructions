@@ -2,32 +2,39 @@
 trigger: always_on
 ---
 
----
-trigger: always_on
----
-
 # Project Workflow Management
 
 Guidelines for managing the project workflow from ideas to implementation
 
-## Workflow Overview
+## Workflow Triggers
 
-1. **Ideation Phase**
-   - Create idea files in `.ai/1.ideas/`
-   - Naming: `idea-[short-description].md`
-   - Include problem statement, goals, and initial thoughts
+1. **Idea Creation**
+   - When user says "my idea is: [idea text]":
+     1. Create a new file in `.ai/1.ideas/` with name `idea-{timestamp}.md`
+     2. Format the idea with a title and the provided description
+     3. Include creation timestamp and status: `Status: New`
 
-2. **PRD Creation**
-   - For each idea, create a PRD in `.ai/2.prd/`
-   - Global PRD: `prd-global.md` (overall project)
-   - Feature PRDs: `prd-feature-[name].md`
-   - Use template from `.ai/2.prd/.generate-prd.md`
+2. **PRD Generation**
+   - When user says "create the prd":
+     1. Look for the most recent file in `.ai/1.ideas/`
+     2. Use the template from `.ai/2.prd/.generate-prd.md`
+     3. Create a PRD in `.ai/2.prd/` with name `prd-{idea-name}.md`
+     4. Include sections for:
+        - Overview
+        - Features
+        - Requirements
+        - Technical Specifications
 
 3. **Task Generation**
-   - Generate tasks from PRD using `.ai/3.tasks/.generate-tasks.md`
-   - Task list naming: `tasks-[prd-name].md`
-   - Store in `.ai/3.tasks/`
-   - Maintain `.ai/3.tasks/relevant-files.md` for context
+   - When user says "create the tasks":
+     1. Find the most recent PRD in `.ai/2.prd/`
+     2. Use the rules from [.ai/3.work/.generate-tasks.md](.ai/3.work/.generate-tasks.md)
+     3. Create a task file in `.ai/3.tasks/` with name `tasks-{prd-name}.md`
+     4. Include:
+        - Parent tasks for major components
+        - Sub-tasks for implementation details
+        - Testing tasks
+        - Documentation updates
 
 ## Task Implementation
 
@@ -37,7 +44,6 @@ Guidelines for managing the project workflow from ideas to implementation
   - `[ ]` - Not started (default state for new tasks)
   - `[-]` - In progress
   - `[x]` - Completed
-  - `[!]` - Blocked
 
 - **Automatic Status Updates:**
   1. When starting work on a task, update its status to `[-]`
@@ -64,7 +70,7 @@ Guidelines for managing the project workflow from ideas to implementation
    - Commit after completing each sub-task
    - Use descriptive commit messages
    - Reference task numbers in commit messages
-   - Include updates to [relevant-files.md](cci:7://file:///Users/dhlotter/Downloads/sourcecontrol/projects/ai-dev-instructions/.ai/3.work/relevant-files.md:0:0-0:0) in the same commit as the related file changes
+   - Include updates to [relevant-files.md](.ai/3.work/relevant-files.md) in the same commit as the related file changes
 
 ## AI Instructions
 
@@ -78,6 +84,7 @@ Guidelines for managing the project workflow from ideas to implementation
    - When creating new files:
      1. Add entry to `.ai/3.tasks/relevant-files.md` first
      2. Create the actual file
+     3. Include a comment at the top of the file with a brief description
    - When modifying files:
      1. Update the relevant entry in `.ai/3.tasks/relevant-files.md` if the file's purpose changes
    - When deleting files:
@@ -85,7 +92,7 @@ Guidelines for managing the project workflow from ideas to implementation
      2. Delete the file
 
 3. **Documentation**
-   - Update [relevant-files.md](cci:7://file:///Users/dhlotter/Downloads/sourcecontrol/projects/ai-dev-instructions/.ai/3.work/relevant-files.md:0:0-0:0) with changes
+   - Update [relevant-files.md](.ai/3.work/relevant-files.md) with changes
    - Add comments explaining complex logic
    - Document any assumptions or decisions made
 
