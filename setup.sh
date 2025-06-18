@@ -2,22 +2,9 @@
 
 REPO_URL="https://raw.githubusercontent.com/dhlotter/ai-dev-instructions/main"
 
-# If no project name is provided, use the current directory
-if [ -z "$1" ]; then
-  TARGET_DIR="."
-  echo "Setting up AI development files in the current directory..."
-else
-  PROJECT_NAME="$1"
-  # Check if the project directory already exists
-  if [ -d "$PROJECT_NAME" ]; then
-    echo "Error: Directory '$PROJECT_NAME' already exists."
-    exit 1
-  fi
-  # Create the new project directory
-  echo "Creating project directory: $PROJECT_NAME"
-  mkdir -p "$PROJECT_NAME"
-  TARGET_DIR="$PROJECT_NAME"
-fi
+# Always use the current directory
+TARGET_DIR="."
+echo "Setting up AI development files in the current directory..."
 
 # Function to download a directory from GitHub
 # Usage: download_dir <target_dir> <source_dir>
@@ -68,8 +55,4 @@ echo "Downloading framework files..."
 download_dir "$TARGET_DIR/.ai" ".ai"
 download_dir "$TARGET_DIR/.windsurf" ".windsurf"
 
-if [ "$TARGET_DIR" != "." ]; then
-  echo "Project '$TARGET_DIR' created successfully."
-else
-  echo "AI development files have been set up in the current directory."
-fi
+echo "AI development files have been set up in the current directory."
