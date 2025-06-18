@@ -23,16 +23,13 @@ download_file() {
   return 0
 }
 
-# Function to list all files in the repository
-list_repo_files() {
-  # Get the repository contents using GitHub API
-  echo "Fetching repository file list..."
-  curl -sSL "$GITHUB_API/git/trees/main?recursive=1" | grep -o '"path":"[^"]*"' | sed 's/"path":"//g' | sed 's/"//g'
-}
-
-# Get list of all files in the repository
+# Get repository file list using GitHub API
 echo "Fetching repository file list..."
-FILES=$(list_repo_files)
+API_RESPONSE=$(curl -sSL "$GITHUB_API/git/trees/main?recursive=1")
+
+# Extract file paths from the API response
+FILES=$(echo "$API_RESPONSE" | grep -o '"path":"[^"]*"' | sed 's/"path":"//g' | sed 's/"//g')
+
 if [ -z "$FILES" ]; then
   echo "Error: Failed to list repository files."
   exit 1
@@ -40,7 +37,12 @@ fi
 
 # Download each file
 echo "Downloading files..."
-for file in $FILES; do
+while IFS= read -r file; do
+  # Skip empty lines
+  if [ -z "$file" ]; then
+    continue
+  fi
+  
   # Skip .git files and directories
   if [[ "$file" == .git* ]]; then
     continue
@@ -56,8 +58,8 @@ for file in $FILES; do
   
   # Download the file
   download_file "$file" "$file"
-done
+done <<< "$FILES"
 
 echo "AI development files have been set up in the current directory."
 echo "Directory structure:"
-find . -type f -not -path "*/\.*" | sort
+find . -type f -not -path "*/\.*" | grep -v "setup.sh" | sort
