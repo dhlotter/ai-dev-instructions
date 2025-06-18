@@ -1,23 +1,23 @@
 #!/bin/bash
 
-# Check if a project name is provided
-if [ -z "$1" ]; then
-  echo "Usage: $0 <project-name>"
-  exit 1
-fi
-
-PROJECT_NAME=$1
 REPO_URL="https://raw.githubusercontent.com/dhlotter/ai-dev-instructions/main"
 
-# Check if the project directory already exists
-if [ -d "$PROJECT_NAME" ]; then
-  echo "Error: Directory '$PROJECT_NAME' already exists."
-  exit 1
+# If no project name is provided, use the current directory
+if [ -z "$1" ]; then
+  TARGET_DIR="."
+  echo "Setting up AI development files in the current directory..."
+else
+  PROJECT_NAME="$1"
+  # Check if the project directory already exists
+  if [ -d "$PROJECT_NAME" ]; then
+    echo "Error: Directory '$PROJECT_NAME' already exists."
+    exit 1
+  fi
+  # Create the new project directory
+  echo "Creating project directory: $PROJECT_NAME"
+  mkdir -p "$PROJECT_NAME"
+  TARGET_DIR="$PROJECT_NAME"
 fi
-
-# Create the new project directory
-echo "Creating project directory: $PROJECT_NAME"
-mkdir -p "$PROJECT_NAME"
 
 # Function to download a directory from GitHub
 # Usage: download_dir <target_dir> <source_dir>
@@ -65,7 +65,11 @@ download_dir() {
 
 # Download the .ai and .windsurf directories
 echo "Downloading framework files..."
-download_dir "$PROJECT_NAME/.ai" ".ai"
-download_dir "$PROJECT_NAME/.windsurf" ".windsurf"
+download_dir "$TARGET_DIR/.ai" ".ai"
+download_dir "$TARGET_DIR/.windsurf" ".windsurf"
 
-echo "Project '$PROJECT_NAME' created successfully."
+if [ "$TARGET_DIR" != "." ]; then
+  echo "Project '$TARGET_DIR' created successfully."
+else
+  echo "AI development files have been set up in the current directory."
+fi
