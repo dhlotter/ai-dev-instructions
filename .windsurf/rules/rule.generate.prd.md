@@ -2,10 +2,18 @@
 trigger: generate_prd
 ---
 
-# How to use this template:
+# PRD Generation for Windsurf IDE
+
+## File Naming Convention
+- PRD files: `{idea-name}-prd.md` (e.g., `user-auth-prd.md`)
+- Task files: `{idea-name}-tasks.md` (e.g., `user-auth-tasks.md`)
+- Idea files: `{idea-name}-idea.md` (e.g., `user-auth-idea.md`)
+
+## How to use this template:
 1. When the user asks to create a PRD, use this template
 2. Fill in all sections with clear, specific details
 3. Use checkboxes for items that need to be completed
+4. Save the file using the naming convention above
 
 # Product Requirements Document (PRD)
 

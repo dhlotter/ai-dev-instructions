@@ -8,7 +8,9 @@ trigger: generate_tasks
 Automatically generate a structured markdown file from a Product Requirements Document (PRD), listing relevant files and tasks necessary for implementing features.
 
 ## Output
-- **Filename:** `.ai/tasks-[idea-name].md` (e.g., `tasks-auth-system.md`)
+- **Filename:** `{idea-name}-tasks.md` (e.g., `user-auth-tasks.md`)
+- **Location:** `.windsurf/output/` directory
+- **Format:** Markdown (`.md`)
 
 ---
 
@@ -50,7 +52,7 @@ List tasks in an organized, hierarchical format. Create up to **12 main tasks**,
 ## Task Generation Process
 
 1. **Analyze PRD**
-   - Input PRD from `.ai/prd-{idea-name}.md`
+   - Input PRD from `.windsurf/output/{idea-name}-prd.md`
    - Validate completeness and clarity
 
 2. **Identify Key Components**
