@@ -6,13 +6,13 @@ ARCHIVE_URL="https://github.com/$GITHUB_REPO/archive/$BRANCH.zip"
 
 echo "Setting up AI development files in the current directory..."
 
-# Check for required commands
-for cmd in curl unzip; do
-  if ! command -v $cmd &> /dev/null; then
-    echo "Error: $cmd is required but not installed."
-    exit 1
-  fi
-done
+# Create standard directory structure first
+echo "Creating standard directory structure..."
+mkdir -p .ai/1.ideas
+mkdir -p .ai/2.prd
+mkdir -p .ai/3.tasks
+mkdir -p .ai/3.work
+mkdir -p .windsurf/rules
 
 # Create a temporary directory
 TMP_DIR=$(mktemp -d)
@@ -41,41 +41,28 @@ if ! unzip -q "$TMP_DIR/repo.zip" -d "$TMP_DIR"; then
   exit 1
 fi
 
-# Find the extracted directory name (in case branch name changes)
+# Find the extracted directory
 EXTRACT_DIR=$(find "$TMP_DIR" -maxdepth 1 -type d -name "ai-dev-instructions*" | head -n 1)
 if [ -z "$EXTRACT_DIR" ] || [ ! -d "$EXTRACT_DIR" ]; then
   echo "Error: Extracted directory not found."
   exit 1
 fi
 
-# Create standard directory structure
-echo "Creating standard directory structure..."
-for dir in 
-  ".ai/1.ideas" 
-  ".ai/2.prd" 
-  ".ai/3.tasks" 
-  ".ai/3.work"
-  ".windsurf/rules"
-do
-  mkdir -p "$dir"
-done
-
-# Copy .ai and .windsurf directories
+# Copy files from the repository if they exist
 echo "Copying AI development files..."
-for dir in ".ai" ".windsurf"; do
-  if [ -d "$EXTRACT_DIR/$dir" ]; then
-    echo "Copying $dir directory..."
-    # Copy all files and directories that exist in the source
-    if command -v rsync &> /dev/null; then
-      rsync -a "$EXTRACT_DIR/$dir/" "./$dir/"
-    else
-      (cd "$EXTRACT_DIR" && find "$dir" -type f -exec cp --parents --preserve=all "{}" "../" \; 2>/dev/null || true)
-    fi
-  else
-    echo "Warning: $dir directory not found in the repository."
-  fi
-done
+
+# Copy .ai directory
+if [ -d "$EXTRACT_DIR/.ai" ]; then
+  echo "Copying .ai directory..."
+  cp -R "$EXTRACT_DIR/.ai/"* .ai/ 2>/dev/null || true
+fi
+
+# Copy .windsurf directory
+if [ -d "$EXTRACT_DIR/.windsurf" ]; then
+  echo "Copying .windsurf directory..."
+  cp -R "$EXTRACT_DIR/.windsurf/"* .windsurf/ 2>/dev/null || true
+fi
 
 echo "AI development files have been set up in the current directory."
 echo "Directory structure:"
-find .ai .windsurf -type f 2>/dev/null | sort || echo "No files found."
+find .ai .windsurf -type d -o -type f 2>/dev/null | sort || echo "No files or directories found."
