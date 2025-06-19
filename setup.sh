@@ -53,7 +53,17 @@ echo "Copying AI development files..."
 for dir in ".ai" ".windsurf"; do
   if [ -d "$EXTRACT_DIR/$dir" ]; then
     echo "Copying $dir directory..."
-    cp -R "$EXTRACT_DIR/$dir" .
+    # Create the target directory structure first
+    mkdir -p "$dir"
+    # Use rsync if available for better directory handling, fallback to find + cp
+    if command -v rsync &> /dev/null; then
+      rsync -a --include='*/' --include='.gitkeep' --exclude='*' "$EXTRACT_DIR/$dir/" "./$dir/" 2>/dev/null || true
+      rsync -a "$EXTRACT_DIR/$dir/" "./$dir/"
+    else
+      # Fallback method using find and cp
+      (cd "$EXTRACT_DIR" && find "$dir" -type d -exec mkdir -p -- "../$dir/{}" \; 2>/dev/null || true)
+      (cd "$EXTRACT_DIR" && find "$dir" -type f -exec cp --preserve=all "{}" "../{}" \; 2>/dev/null || true)
+    fi
   else
     echo "Warning: $dir directory not found in the repository."
   fi
