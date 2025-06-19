@@ -7,7 +7,7 @@ echo "Setting up AI development files in the current directory..."
 
 # 1. Create directories
 echo "1. Creating directories..."
-mkdir -p .ai/1.ideas .ai/2.prd .ai/3.tasks .windsurf/rules
+mkdir -p .ai .windsurf/rules
 
 # 2. Get list of files from GitHub
 echo "2. Fetching file list from GitHub..."

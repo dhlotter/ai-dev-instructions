@@ -145,3 +145,9 @@ The process explicitly requires a pause after generating parent tasks to get use
 ## Target Audience
 
 Assume the primary reader of the task list is a **junior developer** who will implement the feature.
+
+
+4. **Task Dependencies:**
+   - Clearly document task dependencies
+   - Verify dependencies before starting a task
+   - Update dependent tasks if changes affect them
