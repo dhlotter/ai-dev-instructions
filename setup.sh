@@ -93,4 +93,14 @@ fi
 
 echo "AI development files have been set up in the current directory."
 echo "Directory structure:"
-find .ai .windsurf -type d -o -type f 2>/dev/null | sort || echo "No files or directories found."
+# Show all directories and files, including empty directories
+find .ai .windsurf -type d -o -type f 2>/dev/null | sort | grep -v "\.git" || echo "No files or directories found."
+
+# Verify all required directories exist
+for dir in ".ai/1.ideas" ".ai/2.prd" ".ai/3.tasks" ".windsurf/rules"; do
+  if [ -d "$dir" ]; then
+    echo "✓ $dir exists"
+  else
+    echo "✗ $dir is missing"
+  fi
+done
