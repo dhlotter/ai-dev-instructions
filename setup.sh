@@ -48,21 +48,28 @@ if [ -z "$EXTRACT_DIR" ] || [ ! -d "$EXTRACT_DIR" ]; then
   exit 1
 fi
 
+# Create standard directory structure
+echo "Creating standard directory structure..."
+for dir in 
+  ".ai/1.ideas" 
+  ".ai/2.prd" 
+  ".ai/3.tasks" 
+  ".ai/3.work"
+  ".windsurf/rules"
+do
+  mkdir -p "$dir"
+done
+
 # Copy .ai and .windsurf directories
 echo "Copying AI development files..."
 for dir in ".ai" ".windsurf"; do
   if [ -d "$EXTRACT_DIR/$dir" ]; then
     echo "Copying $dir directory..."
-    # Create the target directory structure first
-    mkdir -p "$dir"
-    # Use rsync if available for better directory handling, fallback to find + cp
+    # Copy all files and directories that exist in the source
     if command -v rsync &> /dev/null; then
-      rsync -a --include='*/' --include='.gitkeep' --exclude='*' "$EXTRACT_DIR/$dir/" "./$dir/" 2>/dev/null || true
       rsync -a "$EXTRACT_DIR/$dir/" "./$dir/"
     else
-      # Fallback method using find and cp
-      (cd "$EXTRACT_DIR" && find "$dir" -type d -exec mkdir -p -- "../$dir/{}" \; 2>/dev/null || true)
-      (cd "$EXTRACT_DIR" && find "$dir" -type f -exec cp --preserve=all "{}" "../{}" \; 2>/dev/null || true)
+      (cd "$EXTRACT_DIR" && find "$dir" -type f -exec cp --parents --preserve=all "{}" "../" \; 2>/dev/null || true)
     fi
   else
     echo "Warning: $dir directory not found in the repository."
