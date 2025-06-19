@@ -1,153 +1,92 @@
 ---
-trigger: manual
+trigger: generate_tasks
 ---
 
-# Task Generation from PRD
+# PRD Task Generation Rule for Windsurf IDE
 
 ## Goal
-
-Create a detailed, actionable task list from a Product Requirements Document (PRD) to guide implementation.
+Automatically generate a structured markdown file from a Product Requirements Document (PRD), listing relevant files and tasks necessary for implementing features.
 
 ## Output
+- **Filename:** `.ai/tasks-[idea-name].md` (e.g., `tasks-auth-system.md`)
 
-- **Format:** Markdown (`.md`)
-- **Location:** `.work/3.tasks/`
-- **Filename:** `tasks-[prd-name].md` (e.g., `tasks-auth-system.md`)
+---
 
-## Process
+## Structure of Generated Markdown
 
-1. **Input PRD**
-   - Reference the PRD file in `.work/2.prd/`
-   - Ensure PRD is complete and reviewed
+### 1. Relevant Files
+This section lists all files that should be created or modified during the project. Each entry must:
+- Clearly indicate the relative file path.
+- Include a brief description explaining its purpose.
+- Enable Windsurf IDE to identify if files exist or if they need creation.
 
-2. **Task Generation**
-   - Break down the PRD into high-level parent tasks
-   - Each parent task should represent a major component or phase
-   - Include setup, implementation, testing, and documentation tasks
-
-3. **Sub-Task Breakdown**
-   - For each parent task, create sub-tasks
-   - Sub-tasks should be specific, actionable, and testable
-   - Include code review and testing sub-tasks
-
-4. **File Identification**
-   - Identify all files that need to be created or modified
-   - Group files by category (e.g., Frontend, Backend, Tests)
-
-## Task List Format
-
-```markdown
-# [PRD Title] - Implementation Tasks
-
-## Parent Task 1: [Task Name]
-- [ ] Subtask 1.1
-- [ ] Subtask 1.2
-- [ ] Subtask 1.3
-
-## Parent Task 2: [Task Name]
-- [ ] Subtask 2.1
-- [ ] Subtask 2.2
-```
-
-## Relevant Files Format
-
-Update Relevant Files section with:
-
-```markdown
-## [Component/Feature Name]
-- `path/to/file.ext` - Brief description of purpose
-- `path/to/another/file.ext` - Brief description
-
-## [Another Component]
-- `path/to/component/file.ext` - Description
-```
-
-## Best Practices
-
-1. **Atomic Tasks**
-   - Each sub-task should be completable in 2-4 hours
-   - Avoid tasks that depend on multiple other tasks
-   - Include verification steps where applicable
-
-2. **Dependencies**
-   - Note any task dependencies
-   - Sequence tasks logically
-   - Identify parallel work opportunities
-
-3. **Estimation**
-   - Provide time estimates for each task
-   - Use T-shirt sizes (S, M, L, XL) or hours
-   - Flag complex tasks that might need spikes
-
-4. **Acceptance Criteria**
-   - Include clear completion criteria
-   - Reference PRD requirements
-   - Define what "done" means for each task
-
-5. **Technical Debt**
-   - Note any technical debt being created
-   - Flag areas needing refactoring
-   - Document workarounds
-
-## Example Task Breakdown
-
-For a PRD about user authentication:
-
-1. **Set up authentication infrastructure**
-   - [ ] Configure auth provider (e.g., NextAuth, Auth0)
-   - [ ] Set up database schema for users
-   - [ ] Implement basic signup flow
-
-2. **Implement core authentication flows**
-   - [ ] Email/password login
-   - [ ] Password reset
-   - [ ] Email verification
-
-3. **Add social authentication**
-   - [ ] Google OAuth integration
-   - [ ] GitHub OAuth integration
-   - [ ] Error handling for auth failures
-```
-
-## Output Format
-
-The generated task list _must_ follow this structure:
+**Example:**
 
 ```markdown
 ## Relevant Files
 
-- `path/to/potential/file1.ts` - Brief description of why this file is relevant (e.g., Contains the main component for this feature).
-- `path/to/file1.test.ts` - Unit tests for `file1.ts`.
-- `path/to/another/file.tsx` - Brief description (e.g., API route handler for data submission).
-- `path/to/another/file.test.tsx` - Unit tests for `another/file.tsx`.
-- `lib/utils/helpers.ts` - Brief description (e.g., Utility functions needed for calculations).
-- `lib/utils/helpers.test.ts` - Unit tests for `helpers.ts`.
-
-### Notes
-
-- Unit tests should typically be placed alongside the code files they are testing (e.g., `MyComponent.tsx` and `MyComponent.test.tsx` in the same directory).
-- Use `npx jest [optional/path/to/test/file]` to run tests. Running without a path executes all tests found by the Jest configuration.
-
-## Tasks
-
-- [ ] 1.0 Parent Task Title
-  - [ ] 1.1 [Sub-task description 1.1]
-  - [ ] 1.2 [Sub-task description 1.2]
-- [ ] 2.0 Parent Task Title
-  - [ ] 2.1 [Sub-task description 2.1]
-- [ ] 3.0 Parent Task Title (may not require sub-tasks if purely structural or configuration)
+- `src/components/Login.tsx` - Main component for user login interface.
+- `src/api/auth.ts` - API handler for authentication requests.
+- `tests/components/Login.test.tsx` - Unit tests for the Login component.
 ```
 
-## Interaction Model
+### 2. Tasks
+List tasks in an organized, hierarchical format. Create up to **12 main tasks**, each potentially having up to **5 sub-tasks**. Tasks should be actionable, clearly defined, and achievable.
 
-The process explicitly requires a pause after generating parent tasks to get user confirmation ("Go") before proceeding to generate the detailed sub-tasks. This ensures the high-level plan aligns with user expectations before diving into details.
+**Task Format:**
+
+```markdown
+## Tasks
+
+- [ ] 1.0 Main Task Title
+  - [ ] 1.1 Sub-task description
+  - [ ] 1.2 Sub-task description
+- [ ] 2.0 Main Task Title
+  - [ ] 2.1 Sub-task description
+```
+
+---
+
+## Task Generation Process
+
+1. **Analyze PRD**
+   - Input PRD from `.ai/prd-{idea-name}.md`
+   - Validate completeness and clarity
+
+2. **Identify Key Components**
+   - Determine main components and features from the PRD
+
+3. **File Mapping**
+   - Identify necessary files by functionality
+   - Organize files by frontend, backend, and test categories
+
+4. **Task Breakdown**
+   - Create high-level tasks (up to 12)
+   - Clearly describe sub-tasks (up to 5 per main task)
+
+---
+
+## Best Practices
+
+- **Atomic Tasks:** Each sub-task should take 2-4 hours.
+- **Dependencies:** Explicitly note and manage task dependencies.
+- **Estimation:** Provide clear and realistic time estimates.
+- **Acceptance Criteria:** Clearly define completion criteria aligned with PRD.
+- **Technical Debt:** Clearly document any trade-offs or necessary refactors.
+- **Future-Proof Development:** Write code that is modular, scalable, and easy to modify, ensuring future changes or additions can be made with minimal effort. Follow good coding practices, including clear naming conventions, proper commenting, and efficient algorithms.
+- **Code Reviews:** Regularly review code for clarity, maintainability, and adherence to standards.
+- **Documentation:** Ensure all major functionality and complex logic are clearly documented to facilitate understanding and future maintenance.
+- **Testing:** Maintain comprehensive test coverage to catch issues early and simplify future enhancements.
+- **Clean Code:** Write clean, maintainable, and modular code. Comment thoroughly, especially for complex algorithms like Fair Value Gap detection or Retail Trap identification.
+- **Modularity:** Break code into reusable components or functions for scalability and maintainability. Example: Create separate modules for Fair Value Gap detection, Liquidity Zone mapping, and Order Block identification.
+- **Tailored Solutions:** Always provide the best solution tailored to the specific case, aligned with the app’s unique requirements. Avoid generic or "one-size-fits-all" responses unless they are objectively optimal.
+
+---
+
+## Interaction Model
+Pause after identifying main tasks for explicit confirmation before generating sub-tasks. This ensures alignment and clarity before proceeding to detailed planning.
+
+---
 
 ## Target Audience
-
-Assume the primary reader of the task list is a **junior developer** who will implement the feature.
-
-
-4. **Task Dependencies:**
-   - Clearly document task dependencies
-   - Verify dependencies before starting a task
-   - Update dependent tasks if changes affect them
+Junior developers implementing features directly from the generated task lists and file references.
