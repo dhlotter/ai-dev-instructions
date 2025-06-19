@@ -6,13 +6,13 @@ ARCHIVE_URL="https://github.com/$GITHUB_REPO/archive/$BRANCH.zip"
 
 echo "Setting up AI development files in the current directory..."
 
-# Create standard directory structure first
+# Create standard directory structure
 echo "Creating standard directory structure..."
-mkdir -p .ai/1.ideas
-mkdir -p .ai/2.prd
-mkdir -p .ai/3.tasks
-mkdir -p .ai/3.work
-mkdir -p .windsurf/rules
+# Create each directory individually for maximum compatibility
+mkdir -p ".ai/1.ideas"
+mkdir -p ".ai/2.prd"
+mkdir -p ".ai/3.tasks"
+mkdir -p ".windsurf/rules"
 
 # Create a temporary directory
 TMP_DIR=$(mktemp -d)
@@ -48,19 +48,52 @@ if [ -z "$EXTRACT_DIR" ] || [ ! -d "$EXTRACT_DIR" ]; then
   exit 1
 fi
 
-# Copy files from the repository if they exist
+# Function to copy files from source to destination, preserving directory structure
+copy_files() {
+  local src="$1"
+  local dest="$2"
+  
+  if [ -d "$src" ]; then
+    # Create destination directory if it doesn't exist
+    mkdir -p "$dest"
+    
+    # Copy all files and directories, preserving structure
+    if command -v rsync &> /dev/null; then
+      rsync -a "$src/" "$dest/"
+    else
+      find "$src" -type f -exec sh -c '
+        dest="$1/$(dirname "${2#$3}")"
+        mkdir -p "$dest"
+        cp "$2" "$dest/"
+      ' _ "$dest" {} "$src" \;
+    fi
+  fi
+}
+
+# Copy files from the repository
 echo "Copying AI development files..."
 
-# Copy .ai directory
+# Copy .ai directory contents
 if [ -d "$EXTRACT_DIR/.ai" ]; then
-  echo "Copying .ai directory..."
-  cp -R "$EXTRACT_DIR/.ai/"* .ai/ 2>/dev/null || true
+  echo "Copying .ai directory contents..."
+  # First copy everything
+  copy_files "$EXTRACT_DIR/.ai" ".ai"
+  
+  # If 3.work exists, move its contents to 3.tasks and remove it
+  if [ -d ".ai/3.work" ]; then
+    echo "Migrating 3.work to 3.tasks..."
+    mkdir -p .ai/3.tasks
+    if [ "$(ls -A .ai/3.work/ 2>/dev/null)" ]; then
+      mv .ai/3.work/* .ai/3.tasks/ 2>/dev/null || true
+    fi
+    rmdir .ai/3.work 2>/dev/null || true
+  fi
 fi
 
-# Copy .windsurf directory
+# Copy .windsurf directory contents
 if [ -d "$EXTRACT_DIR/.windsurf" ]; then
-  echo "Copying .windsurf directory..."
-  cp -R "$EXTRACT_DIR/.windsurf/"* .windsurf/ 2>/dev/null || true
+  echo "Copying .windsurf directory contents..."
+  copy_files "$EXTRACT_DIR/.windsurf" ".windsurf"
 fi
 
 echo "AI development files have been set up in the current directory."
