@@ -8,10 +8,11 @@ echo "Setting up AI development files in the current directory..."
 
 # Create standard directory structure
 echo "Creating standard directory structure..."
-# Create only the three required directories
+# Create all required directories
 mkdir -p ".ai/1.ideas"
 mkdir -p ".ai/2.prd"
 mkdir -p ".ai/3.tasks"
+mkdir -p ".windsurf/rules"
 
 # Create a temporary directory
 TMP_DIR=$(mktemp -d)
@@ -69,20 +70,26 @@ copy_files() {
   fi
 }
 
-# Copy only the three required directories from the repository
+# Copy files from the repository
 echo "Copying AI development files..."
 
-# Copy each required directory individually
+# Copy .ai subdirectories
 for dir in "1.ideas" "2.prd" "3.tasks"; do
   src_dir="$EXTRACT_DIR/.ai/$dir"
-  if [ -d "$src_dir" ]; then
-    echo "Copying $dir directory..."
+  if [ -d "$src_dir" ] && [ "$(ls -A "$src_dir" 2>/dev/null)" ]; then
+    echo "Copying .ai/$dir files..."
     mkdir -p ".ai/$dir"
-    if [ "$(ls -A "$src_dir" 2>/dev/null)" ]; then
-      cp -R "$src_dir/"* ".ai/$dir/" 2>/dev/null || true
-    fi
+    cp -R "$src_dir/"* ".ai/$dir/" 2>/dev/null || true
   fi
 done
+
+# Copy .windsurf/rules directory
+windsurf_src="$EXTRACT_DIR/.windsurf/rules"
+if [ -d "$windsurf_src" ] && [ "$(ls -A "$windsurf_src" 2>/dev/null)" ]; then
+  echo "Copying .windsurf/rules files..."
+  mkdir -p ".windsurf/rules"
+  cp -R "$windsurf_src/"* ".windsurf/rules/" 2>/dev/null || true
+fi
 
 echo "AI development files have been set up in the current directory."
 echo "Directory structure:"
