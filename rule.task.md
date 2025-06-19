@@ -28,7 +28,7 @@ Guidelines for managing the project workflow from ideas to implementation
 3. **Task Generation**
    - When user says "create the tasks":
      1. Find the most recent PRD in `.ai/2.prd/`
-     2. Use the rules from [.ai/3.work/.generate-tasks.md](.ai/3.work/.generate-tasks.md)
+     2. Use the rules from [.ai/3.tasks/.generate-tasks.md](.ai/3.tasks/.generate-tasks.md)
      3. Create a task file in `.ai/3.tasks/` with name `tasks-{prd-name}.md`
      4. Include:
         - Parent tasks for major components
@@ -59,8 +59,7 @@ Guidelines for managing the project workflow from ideas to implementation
 ## File Management
 
 1. **Relevant Files**
-   - Maintain `.ai/3.tasks/relevant-files.md` to track all project files
-   - File location: `.ai/3.tasks/relevant-files.md`
+   - Maintain `Relevant Files` section to track all project files
    - List all created/modified files with one-line descriptions
    - Use clear, functional names (e.g., `login-form.tsx`)
    - Group related files with headers (e.g., `## Frontend Components`)
@@ -70,29 +69,29 @@ Guidelines for managing the project workflow from ideas to implementation
    - Commit after completing each sub-task
    - Use descriptive commit messages
    - Reference task numbers in commit messages
-   - Include updates to [relevant-files.md](.ai/3.work/relevant-files.md) in the same commit as the related file changes
+   - Include updates to `Relevant Files` section in the same commit as the related file changes
 
 ## AI Instructions
 
 1. **Task Execution**
-   - Always check `.ai/3.tasks/relevant-files.md` for context before starting work
+   - Always check `Relevant Files` section for context before starting work
    - Follow the task list order strictly
    - Ask for clarification if requirements are unclear
    - Update task status automatically when starting or completing work
 
 2. **File Management**
    - When creating new files:
-     1. Add entry to `.ai/3.tasks/relevant-files.md` first
+     1. Add entry to `Relevant Files` section first
      2. Create the actual file
      3. Include a comment at the top of the file with a brief description
    - When modifying files:
-     1. Update the relevant entry in `.ai/3.tasks/relevant-files.md` if the file's purpose changes
+     1. Update the relevant entry in `Relevant Files` section if the file's purpose changes
    - When deleting files:
-     1. Remove the entry from `.ai/3.tasks/relevant-files.md`
+     1. Remove the entry from `Relevant Files` section
      2. Delete the file
 
 3. **Documentation**
-   - Update [relevant-files.md](.ai/3.work/relevant-files.md) with changes
+   - Update `Relevant Files` section with changes
    - Add comments explaining complex logic
    - Document any assumptions or decisions made
 
