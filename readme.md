@@ -13,23 +13,22 @@ bash <(curl -sSL https://raw.githubusercontent.com/dhlotter/ai-dev-instructions/
 
 This framework is designed to guide your project through distinct phases:
 
-1.  **Ideation (`.ai/1.ideas/`):** Brainstorm and develop your initial concepts.
-```text 
-my idea is: 
-a simple to-do app with status managment (todo, in progress, done) i a kanban board. the app should have a dark mode and should be responsive. 
-
+1.  **Ideation:** Brainstorm and develop your initial concepts in `.ai/work/`
+```text
+my idea is:
+a simple to-do app with status managment (todo, in progress, done) i a kanban board. the app should have a dark mode and should be responsive.
 ```
 
-2.  **Product Requirements Document (PRD) (`.ai/2.prd/`):** Define the project's scope, features, and specifications.
-```text 
+2.  **Product Requirements Document (PRD):** Define the project's scope, features, and specifications in `.ai/work/`
+```text
 generate the prd
-
 ```
 
-3.  **Tasks (`.ai/3.tasks/`):** Break down the PRD into actionable development tasks.
-```text 
-generate the tasks
-
+3.  **Tasks:** Break down the PRD into actionable development tasks using Kilo Code's internal task system
+```text
+create tasks
 ```
 
-Detailed guidelines for this workflow, including AI collaboration and file management, can be found within the `rule.task.md` file inside the copied `.ai` directory of your new project.
+All project files are stored in `.ai/work/` for easy access and organization.
+
+Detailed guidelines for this workflow, including AI collaboration and file management, can be found within the [`.ai/rules/5-task-generation.md`](.ai/rules/5-task-generation.md) file inside the copied `.ai` directory of your new project.

@@ -1,0 +1,73 @@
+{
+    "mcpServers": {
+      "sequential-thinking": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-sequential-thinking"
+        ],
+        "env": {},
+        "disabled": false
+      },
+      "puppeteer": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-puppeteer"
+        ],
+        "env": {},
+        "disabled": false
+      },
+      "youtube": {
+        "command": "npx",
+        "args": [
+          "@anaisbetts/mcp-youtube"
+        ],
+        "env": {},
+        "disabled": false
+      },
+      "zapiers": {
+        "serverUrl": "https://mcp.zapier.com/api/mcp/s/OWE1NDQ2NTUtMTg3Yi00MWE3LWE4MTgtNGIzNDQ0MzUyMTk0OmQzMzc5OGFjLTQyMGUtNGIwNS04MmUzLWNlNWQ1MDhmNDkzOA==/sse",
+        "disabled": false
+      },
+      "fetch": {
+        "command": "npx",
+        "args": [
+          "@modelcontextprotocol/server-everything"
+        ],
+        "env": {},
+        "disabled": true
+      },
+      "supabase": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@supabase/mcp-server-supabase@latest",
+          "--access-token",
+          "sbp_b3f4e0756c9b36659eaeb71ac8442ddb03d48419"
+        ],
+        "env": {},
+        "disabled": false
+      },
+      "serper": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "serper-search-scrape-mcp-server"
+        ],
+        "env": {
+          "SERPER_API_KEY": "269fd7e2595ee7bc710c0cb39a6e96a97ea5d7aa"
+        },
+        "disabled": false
+      },
+      "context7": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@upstash/context7-mcp@latest"
+        ],
+        "env": {},
+        "disabled": false
+      }
+    }
+  }
